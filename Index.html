@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dragon Ball Quiz</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #111111, #ff8c00);
+        color: white;
+        text-align: center;
+        min-height: 100vh;
+    }
+
+    header {
+        background: #111;
+        padding: 25px;
+        border-bottom: 4px solid #ff9800;
+    }
+
+    h1 {
+        margin: 0;
+        color: #ff9800;
+        font-size: 36px;
+    }
+
+    .subtitle {
+        margin-top: 8px;
+        color: #ddd;
+    }
+
+    .container {
+        max-width: 700px;
+        margin: 35px auto;
+        padding: 20px;
+    }
+
+    .box {
+        background: rgba(0, 0, 0, 0.88);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 25px black;
+    }
+
+    h2 {
+        color: #ff9800;
+    }
+
+    .level-buttons button {
+        padding: 18px;
+        margin: 10px;
+        width: 80%;
+        max-width: 400px;
+        border: none;
+        border-radius: 12px;
+        font-size: 20px;
+        font-weight: bold;
+        color: white;
+        cursor: pointer;
+    }
+
+    .easy {
+        background: #28a745;
+    }
+
+    .medium {
+        background: #2196f3;
+    }
+
+    .hard {
+        background: #9c27b0;
+    }
+
+    .extreme {
+        background: #d00000;
+    }
+
+    button:hover {
+        transform: scale(1.03);
+        filter: brightness(1.15);
+    }
+
+    .question {
+        font-size: 24px;
+        margin-bottom: 25px;
+        font-weight: bold;
+    }
+
+    .answer {
+        width: 100%;
+        padding: 15px;
+        margin: 8px 0;
+        background: #ff9800;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 17px;
+        cursor: pointer;
+    }
+
+    .answer:hover {
+        background: #ffb52e;
+    }
+
+    #score {
+        color: #ff9800;
+        margin-bottom: 20px;
+    }
+
+    #result {
+        font-size: 25px;
+        margin: 20px 0;
+    }
+
+    .restart {
+        background: #2196f3;
+        color: white;
+        border: none;
+        padding: 15px 25px;
+        border-radius: 10px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    #quiz,
+    #resultScreen {
+        display: none;
+    }
+
+    .back {
+        background: #555;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 15px;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🐉 DRAGON BALL QUIZ 🐉</h1>
+    <div class="subtitle">Test your Dragon Ball knowledge!</div>
+</header>
+
+<div class="container">
+
+    <!-- LEVEL SELECT -->
+    <div class="box" id="levelScreen">
+        <h2>Choose Your Difficulty</h2>
+
+        <div class="level-buttons">
+
+            <button class="easy" onclick="startQuiz('easy')">
+                🟢 EASY
+            </button>
+
+            <button class="medium" onclick="startQuiz('medium')">
+                🔵 MEDIUM
+            </button>
+
+            <button class="hard" onclick="startQuiz('hard')">
+                🟣 HARD
+            </button>
+
+            <button class="extreme" onclick="startQuiz('extreme')">
+                🔴 EXTREME
+            </button>
+
+        </div>
+    </div>
+
+
+    <!-- QUIZ -->
+    <div class="box" id="quiz">
+
+        <h2 id="levelTitle"></h2>
+
+        <div id="score">
+            Question 1 / 10
+        </div>
+
+        <div class="question" id="question"></div>
+
+        <button class="answer" onclick="answer(0)" id="answer0"></button>
+        <button class="answer" onclick="answer(1)" id="answer1"></button>
+        <button class="answer" onclick="answer(2)" id="answer2"></button>
+        <button class="answer" onclick="answer(3)" id="answer3"></button>
+
+        <button class="back" onclick="goHome()">
+            ← Back to Levels
+        </button>
+
+    </div>
+
+
+    <!-- RESULT -->
+    <div class="box" id="resultScreen">
+
+        <h2>🏆 QUIZ COMPLETE!</h2>
+
+        <div id="result"></div>
+
+        <button class="restart" onclick="goHome()">
+            🔄 Choose Another Level
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const questions = {
+
+    easy: [
+
+        {
+            question: "What is Goku's Saiyan name?",
+            answers: ["Kakarot", "Vegeta", "Bardock", "Raditz"],
+            correct: 0
+        },
+
+        {
+            question: "Who is Goku's oldest son?",
+            answers: ["Goten", "Gohan", "Trunks", "Bardock"],
+            correct: 1
+        },
+
+        {
+            question: "Who is the Prince of all Saiyans?",
+            answers: ["Goku", "Gohan", "Vegeta", "Broly"],
+            correct: 2
+        },
+
+        {
+            question: "What is Goku's famous energy attack?",
+            answers: ["Final Flash", "Kamehameha", "Galick Gun", "Death Beam"],
+            correct: 1
+        },
+
+        {
+            question: "Who is Gohan's little brother?",
+            answers: ["Trunks", "Goten", "Krillin", "Uub"],
+            correct: 1
+        },
+
+        {
+            question: "Who is the God of Destruction of Universe 7?",
+            answers: ["Whis", "Beerus", "Shenron", "Jiren"],
+            correct: 1
+        },
+
+        {
+            question: "What race is Piccolo?",
+            answers: ["Saiyan", "Android", "Namekian", "Human"],
+            correct: 2
+        },
+
+        {
+            question: "Who is Goku's wife?",
+            answers: ["Bulma", "Videl", "Chi-Chi", "18"],
+            correct: 2
+        },
+
+        {
+            question: "What color is Super Saiyan hair normally?",
+            answers: ["Blue", "Red", "Black", "Yellow"],
+            correct: 3
+        },
+
+        {
+            question: "What are the magical balls that can grant wishes called?",
+            answers: ["Dragon Balls", "Saiyan Balls", "Wish Stones", "Power Balls"],
+            correct: 0
+        }
+
+    ],
+
+
+    medium: [
+
+        {
+            question: "What is the name of Goku's father?",
+            answers: ["Bardock", "Raditz", "King Vegeta", "Nappa"],
+            correct: 0
+        },
+
+        {
+            question: "Who trained Gohan during the Cell Games?",
+            answers: ["Piccolo", "Goku", "Vegeta", "Krillin"],
+            correct: 1
+        },
+
+        {
+            question: "What transformation comes after Super Saiyan 2?",
+            answers: ["Super Saiyan 3", "Super Saiyan God", "Super Saiyan Blue", "Ultra Instinct"],
+            correct: 0
+        },
+
+        {
+            question: "Who is Beerus' martial arts teacher?",
+            answers: ["Goku", "Whis", "Grand Priest", "Jiren"],
+            correct: 1
+        },
+
+        {
+            question: "What is Vegeta's famous energy attack?",
+            answers: ["Kamehameha", "Final Flash", "Masenko", "Special Beam Cannon"],
+            correct: 1
+        },
+
+        {
+            question: "Who was the main villain of the Cell Saga?",
+            answers: ["Frieza", "Majin Buu", "Cell", "Broly"],
+            correct: 2
+        },
+
+        {
+            question: "What is Goten's father's name?",
+            answers: ["Vegeta", "Goku", "Gohan", "Bardock"],
+            correct: 1
+        },
+
+        {
+            question: "Who fused with Vegeta to create Vegito?",
+            answers: ["Gohan", "Goten", "Goku", "Trunks"],
+            correct: 2
+        },
+
+        {
+            question: "What planet is Piccolo originally from?",
+            answers: ["Earth", "Namek", "Planet Vegeta", "Yardrat"],
+            correct: 1
+        },
+
+        {
+            question: "What is the name of the fusion between Goten and Trunks?",
+            answers: ["Gogeta", "Vegito", "Gotenks", "Gogunks"],
+            correct: 2
+        }
+
+    ],
+
+
+    hard: [
+
+        {
+            question: "What is the name of the Kai who trained Goku in Other World?",
+            answers: ["King Kai", "Supreme Kai", "Old Kai", "Grand Kai"],
+            correct: 0
+        },
+
+        {
+            question: "What technique does Goku use to teleport?",
+            answers: ["Instant Transmission", "Kaioken", "Solar Flare", "Spirit Control"],
+            correct: 0
+        },
+
+        {
+            question: "Which Universe does Jiren belong to?",
+            answers: ["Universe 6", "Universe 7", "Universe 11", "Universe 12"],
+            correct: 2
+        },
+
+        {
+            question: "Who is the strongest fighter in Universe 11 during the Tournament of Power?",
+            answers: ["Toppo", "Dyspo", "Jiren", "Kahseral"],
+            correct: 2
+        },
+
+        {
+            question: "What is the name of the Supreme Kai of Universe 7?",
+            answers: ["Shin", "Zamasu", "Gowasu", "Kibito"],
+            correct: 0
+        },
+
+        {
+            question: "Who created the Androids that attacked Earth?",
+            answers: ["Dr. Gero", "Dr. Brief", "Dr. Hedo", "Dr. Myuu"],
+            correct: 0
+        },
+
+        {
+            question: "What is the name of Frieza's father?",
+            answers: ["King Cold", "King Frost", "Cooler", "Chilled"],
+            correct: 0
+        },
+
+        {
+            question: "What is Goku's first transformation into Super Saiyan God?",
+            answers: ["SSJ God", "SSJ Blue", "SSJ4", "Ultra Instinct"],
+            correct: 0
+        },
+
+        {
+            question: "Who is the Supreme Kai's assistant in Universe 7?",
+            answers: ["Kibito", "Whis", "Beerus", "Old Kai"],
+            correct: 0
+        },
+
+        {
+            question: "What is the name of the technique used by Gohan against Cell?",
+            answers: ["Father-Son Kamehameha", "Final Flash", "Galick Gun", "Masenko"],
+            correct: 0
+        }
+
+    ],
+
+
+    extreme: [
+
+        {
+            question: "What is the name of the angel attendant of Universe 6's God of Destruction?",
+            answers: ["Whis", "Vados", "Marcarita", "Cus"],
+            correct: 1
+        },
+
+        {
+            question: "What is the name of the Kaioshin who became Goku Black?",
+            answers: ["Gowasu", "Zamasu", "Shin", "Kibito"],
+            correct: 1
+        },
+
+        {
+            question: "What is the name of the Potara fusion between Goku and Vegeta?",
+            answers: ["Gogeta", "Vegito", "Gotenks", "Veku"],
+            correct: 1
+        },
+
+        {
+            question: "Which Universe was erased first during the Tournament of Power?",
+            answers: ["Universe 9", "Universe 10", "Universe 2", "Universe 6"],
+            correct: 0
+        },
+
+        {
+            question: "What is the name of the technique used by Goku that lets him move without consciously thinking about his movements?",
+            answers: ["Ultra Instinct", "Kaioken", "Spirit Control", "Instant Transmission"],
+            correct: 0
+        },
+
+        {
+            question: "Who is the Grand Priest's son?",
+            answers: ["Whis", "Beerus", "Jiren", "Zamasu"],
+            correct: 0
+        },
+
+        {
+            question: "What is the name of the angel from Universe 11?",
+            answers: ["Marcarita", "Vados", "Whis", "Mojito"],
+            correct: 0
+        },
+
+        {
+            question: "Who was responsible for creating Cell?",
+            answers: ["Dr. Gero", "Dr. Hedo", "Dr. Myuu", "Bulma"],
+            correct: 0
+        },
+
+        {
+            question: "What is the name of the fusion dance fusion of Goku and Vegeta?",
+            answers: ["Vegito", "Gogeta", "Gotenks", "Kefla"],
+            correct: 1
+        },
+
+        {
+            question: "What is the name of the Dragon that appears after the Super Dragon Balls are gathered?",
+            answers: ["Shenron", "Porunga", "Super Shenron", "Toronbo"],
+            correct: 2
+        }
+
+    ]
+
+};
+
+
+let currentLevel = "";
+let currentQuestion = 0;
+let score = 0;
+
+
+function startQuiz(level) {
+
+    currentLevel = level;
+    currentQuestion = 0;
+    score = 0;
+
+    document.getElementById("levelScreen").style.display = "none";
+    document.getElementById("resultScreen").style.display = "none";
+    document.getElementById("quiz").style.display = "block";
+
+    document.getElementById("levelTitle").innerText =
+        level.toUpperCase() + " MODE";
+
+    loadQuestion();
+}
+
+
+function loadQuestion() {
+
+    const q = questions[currentLevel][currentQuestion];
+
+    document.getElementById("question").innerText =
+        q.question;
+
+    document.getElementById("score").innerText =
+        "Question " + (currentQuestion + 1) +
+        " / " + questions[currentLevel].length;
+
+    for (let i = 0; i < 4; i++) {
+        document.getElementById("answer" + i).innerText =
+            q.answers[i];
+    }
+}
+
+
+function answer(choice) {
+
+    const q = questions[currentLevel][currentQuestion];
+
+    if (choice === q.correct) {
+        score++;
+    }
+
+    currentQuestion++;
+
+    if (currentQuestion < questions[currentLevel].length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+
+function showResult() {
+
+    document.getElementById("quiz").style.display = "none";
+    document.getElementById("resultScreen").style.display = "block";
+
+    let total = questions[currentLevel].length;
+
+    let message = "";
+
+    if (score === total) {
+        message = "🔥 PERFECT! YOU HAVE ASCENDED!";
+    }
+    else if (score >= 8) {
+        message = "⚡ AMAZING! You're a true Dragon Ball master!";
+    }
+    else if (score >= 5) {
+        message = "💥 Not bad! Keep training!";
+    }
+    else {
+        message = "🥋 Time to hit the Hyperbolic Time Chamber!";
+    }
+
+    document.getElementById("result").innerHTML =
+        "You scored <strong>" +
+        score + "/" + total +
+        "</strong><br><br>" +
+        message;
+}
+
+
+function goHome() {
+
+    document.getElementById("quiz").style.display = "none";
+    document.getElementById("resultScreen").style.display = "none";
+    document.getElementById("levelScreen").style.display = "block";
+}
+
+</script>
+
+</body>
+</html>
